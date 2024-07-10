@@ -28,8 +28,7 @@ def fetch_database_schema():
     table_ref = client.get_table(f"{dataset_id}.{table_id}")
     schema_info = {table_id: {field.name: field.field_type for field in table_ref.schema}}
     
-    st.write("Fetched Schema Info:", schema_info)  # Debugging line
-    return schema_info
+    st.write("Fetched Schema Info:", schema_info)  
 
 # Clean SQL Query
 def clean_sql_query(query):
@@ -83,7 +82,7 @@ def validate_and_convert_sql_query(sql_query, schema_info):
                     sql_query
                 )
             elif "SUM" in sql_query and dtype == "STRING":
-                # Ensure SUM is applied only to numeric columns
+                # SUM is applied only to numeric columns
                 sql_query = sql_query.replace(f"SUM({column})", f"SUM(CAST({column} AS NUMERIC))")
     
     st.write("Validated and Converted SQL Query:", sql_query)  # Debugging line
@@ -162,7 +161,7 @@ def generate_final_response(sql_query, query_result):
         return "No results to generate a response from."
 
     # Limit the number of records to pass to the model
-    max_records = 100  # You can adjust this number as needed
+    max_records = 100  
     limited_result_data = query_result[:max_records]
     
     # Summarize the data if it exceeds the maximum records
@@ -184,13 +183,12 @@ def generate_final_response(sql_query, query_result):
         stream=True,
     )
 
-    final_response = "".join([chunk.text for chunk in response if chunk.text])  # Handle streaming response
+    final_response = "".join([chunk.text for chunk in response if chunk.text])  # streaming response
     return final_response
 
 # Streamlit Interface
 def main():
     st.title("Natality by County Chatbot")
-
     user_prompt = st.text_input("Enter your prompt:")
     
     if st.button("Submit"):
